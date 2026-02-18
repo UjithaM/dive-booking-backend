@@ -17,7 +17,7 @@ class StoreTenantRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('tenants', 'slug')],
-            'email' => ['required', 'email', 'max:255', Rule::unique('tenants', 'email')],
+            'email' => ['required', 'email', 'max:255', Rule::unique('tenants', 'email'), Rule::unique('users', 'email')],
             'phone' => ['nullable', 'string', 'max:50'],
             'logo_url' => ['nullable', 'string', 'url', 'max:500'],
             'website' => ['nullable', 'string', 'url', 'max:500'],

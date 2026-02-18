@@ -9,6 +9,10 @@ use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class TenantController extends Controller
 {
@@ -48,7 +52,27 @@ class TenantController extends Controller
             }
         }
 
-        $tenant = Tenant::create($data);
+        $tenant = DB::transaction(function () use ($data) {
+            $tenant = Tenant::create($data);
+
+            $password = Str::password(12);
+
+            $user = User::create([
+                'name' => $tenant->name . ' Admin',
+                'email' => $tenant->email,
+                'password' => Hash::make($password),
+                'tenant_id' => $tenant->id,
+                'role' => 'tenant_admin',
+                'is_active' => true,
+            ]);
+
+            $user->assignRole('tenant_admin');
+
+            Log::info("Tenant Created: {$tenant->name} ({$tenant->id})");
+            Log::info("Tenant Admin Created: Email: {$user->email}, Password: {$password}");
+
+            return $tenant;
+        });
 
         return response()->json([
             'message' => 'Tenant created successfully.',
