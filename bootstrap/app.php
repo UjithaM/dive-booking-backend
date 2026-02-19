@@ -3,6 +3,9 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,5 +22,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->is('api/*')) {
+                if ($e instanceof ValidationException) {
+                    return null;
+                }
+
+                Log::error($e->getMessage(), [
+                    'exception' => $e,
+                    'url' => $request->fullUrl(),
+                ]);
+
+                return response()->json([
+                    'message' => 'Something went wrong.',
+                ], 500);
+            }
+        });
     })->create();
