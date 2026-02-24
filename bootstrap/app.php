@@ -1,11 +1,17 @@
 <?php
 
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,6 +32,36 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($request->is('api/*')) {
                 if ($e instanceof ValidationException) {
                     return null;
+                }
+
+                if ($e instanceof AuthenticationException) {
+                    return response()->json([
+                        'message' => 'Unauthenticated.',
+                    ], 401);
+                }
+
+                if ($e instanceof AccessDeniedHttpException) {
+                    return response()->json([
+                        'message' => 'Forbidden.',
+                    ], 403);
+                }
+
+                if ($e instanceof ModelNotFoundException || $e instanceof NotFoundHttpException) {
+                    return response()->json([
+                        'message' => 'Resource not found.',
+                    ], 404);
+                }
+
+                if ($e instanceof MethodNotAllowedHttpException) {
+                    return response()->json([
+                        'message' => 'Method not allowed.',
+                    ], 405);
+                }
+
+                if ($e instanceof HttpException) {
+                    return response()->json([
+                        'message' => $e->getMessage() ?: 'Error.',
+                    ], $e->getStatusCode());
                 }
 
                 Log::error($e->getMessage(), [

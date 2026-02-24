@@ -25,6 +25,7 @@ class StoreTenantRequest extends FormRequest
             'currency' => ['nullable', 'string', 'max:10'],
             'timezone' => ['nullable', 'string', 'max:50', 'timezone:all'],
             'settings' => ['nullable', 'array'],
+            'is_active' => ['boolean'],
         ];
     }
 }

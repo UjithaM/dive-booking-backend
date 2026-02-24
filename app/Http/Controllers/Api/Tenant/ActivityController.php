@@ -6,13 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\StoreActivityRequest;
 use App\Http\Requests\Tenant\UpdateActivityRequest;
 use App\Models\Activity;
+use App\Traits\GeneratesSlug;
+use App\Traits\HandlesMediaUpload;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
 {
+    use GeneratesSlug, HandlesMediaUpload;
+
     public function index(Request $request)
     {
         $activities = Activity::where('tenant_id', $request->user()->tenant_id)
+            ->with('media')
             ->orderBy('sort_order')
             ->paginate(10);
 
@@ -24,9 +29,15 @@ class ActivityController extends Controller
         $data = $request->validated();
         $data['tenant_id'] = $request->user()->tenant_id;
 
+        if (empty($data['slug'])) {
+            $data['slug'] = $this->generateUniqueSlug($data['name'], 'activities', $data['tenant_id']);
+        }
+
         $activity = Activity::create($data);
 
-        return response()->json($activity, 201);
+        $this->handleMediaUpload($request, $activity);
+
+        return response()->json($activity->load('media'), 201);
     }
 
     public function show(Request $request, Activity $activity)
@@ -35,7 +46,7 @@ class ActivityController extends Controller
             abort(403);
         }
 
-        return response()->json($activity);
+        return response()->json($activity->load('media'));
     }
 
     public function update(UpdateActivityRequest $request, Activity $activity)
@@ -44,9 +55,17 @@ class ActivityController extends Controller
             abort(403);
         }
 
-        $activity->update($request->validated());
+        $data = $request->validated();
 
-        return response()->json($activity);
+        if (array_key_exists('name', $data) && empty($data['slug'])) {
+            $data['slug'] = $this->generateUniqueSlug($data['name'], 'activities', $request->user()->tenant_id, $activity->id);
+        }
+
+        $activity->update($data);
+
+        $this->handleMediaUpload($request, $activity);
+
+        return response()->json($activity->load('media'));
     }
 
     public function destroy(Request $request, Activity $activity)

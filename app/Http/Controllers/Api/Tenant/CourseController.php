@@ -6,13 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\StoreCourseRequest;
 use App\Http\Requests\Tenant\UpdateCourseRequest;
 use App\Models\Course;
+use App\Traits\GeneratesSlug;
+use App\Traits\HandlesMediaUpload;
 use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
+    use GeneratesSlug, HandlesMediaUpload;
+
     public function index(Request $request)
     {
         $courses = Course::where('tenant_id', $request->user()->tenant_id)
+            ->with('media')
             ->orderBy('sort_order')
             ->paginate(10);
 
@@ -24,9 +29,15 @@ class CourseController extends Controller
         $data = $request->validated();
         $data['tenant_id'] = $request->user()->tenant_id;
 
+        if (empty($data['slug'])) {
+            $data['slug'] = $this->generateUniqueSlug($data['name'], 'courses', $data['tenant_id']);
+        }
+
         $course = Course::create($data);
 
-        return response()->json($course, 201);
+        $this->handleMediaUpload($request, $course);
+
+        return response()->json($course->load('media'), 201);
     }
 
     public function show(Request $request, Course $course)
@@ -35,7 +46,7 @@ class CourseController extends Controller
             abort(403);
         }
 
-        return response()->json($course);
+        return response()->json($course->load('media'));
     }
 
     public function update(UpdateCourseRequest $request, Course $course)
@@ -44,9 +55,17 @@ class CourseController extends Controller
             abort(403);
         }
 
-        $course->update($request->validated());
+        $data = $request->validated();
 
-        return response()->json($course);
+        if (array_key_exists('name', $data) && empty($data['slug'])) {
+            $data['slug'] = $this->generateUniqueSlug($data['name'], 'courses', $request->user()->tenant_id, $course->id);
+        }
+
+        $course->update($data);
+
+        $this->handleMediaUpload($request, $course);
+
+        return response()->json($course->load('media'));
     }
 
     public function destroy(Request $request, Course $course)

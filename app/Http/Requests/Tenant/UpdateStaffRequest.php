@@ -26,7 +26,7 @@ class UpdateStaffRequest extends FormRequest
             ],
             'title' => ['nullable', 'string', 'max:255'],
             'bio' => ['nullable', 'string'],
-            'profile_photo_url' => ['nullable', 'string', 'url', 'max:255'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'specialties' => ['nullable', 'array'],
             'is_active' => ['boolean'],
         ];

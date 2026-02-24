@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\StoreStaffRequest;
 use App\Http\Requests\Tenant\UpdateStaffRequest;
 use App\Models\Staff;
+use App\Traits\HandlesMediaUpload;
 use Illuminate\Http\Request;
 
 class StaffController extends Controller
 {
+    use HandlesMediaUpload;
+
     public function index(Request $request)
     {
-        $staff = Staff::with('user')
+        $staff = Staff::with('user', 'media')
             ->where('tenant_id', $request->user()->tenant_id)
             ->paginate(10);
 
@@ -26,7 +29,9 @@ class StaffController extends Controller
 
         $staff = Staff::create($data);
 
-        return response()->json($staff, 201);
+        $this->handleMediaUpload($request, $staff);
+
+        return response()->json($staff->load('user', 'media'), 201);
     }
 
     public function show(Request $request, Staff $staff)
@@ -35,7 +40,7 @@ class StaffController extends Controller
             abort(403);
         }
 
-        return response()->json($staff->load('user'));
+        return response()->json($staff->load('user', 'media'));
     }
 
     public function update(UpdateStaffRequest $request, Staff $staff)
@@ -46,7 +51,9 @@ class StaffController extends Controller
 
         $staff->update($request->validated());
 
-        return response()->json($staff);
+        $this->handleMediaUpload($request, $staff);
+
+        return response()->json($staff->load('user', 'media'));
     }
 
     public function destroy(Request $request, Staff $staff)

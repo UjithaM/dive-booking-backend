@@ -18,7 +18,7 @@ class UpdateDiveSiteRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'slug' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 Rule::unique('dive_sites')->ignore($this->dive_site->id)->where(function ($query) {
@@ -31,7 +31,7 @@ class UpdateDiveSiteRequest extends FormRequest
             'difficulty_level' => ['nullable', 'string', 'max:50'],
             'latitude' => ['nullable', 'numeric', 'between:-90,90'],
             'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'image_url' => ['nullable', 'string', 'url', 'max:255'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'is_active' => ['boolean'],
             'sort_order' => ['integer'],
         ];

@@ -18,7 +18,7 @@ class UpdateActivityRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'slug' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 Rule::unique('activities')->ignore($this->activity->id)->where(function ($query) {
@@ -30,7 +30,7 @@ class UpdateActivityRequest extends FormRequest
             'duration_hours' => ['nullable', 'numeric', 'min:0'],
             'max_participants' => ['nullable', 'integer', 'min:1'],
             'includes' => ['nullable', 'array'],
-            'hero_image_url' => ['nullable', 'string', 'url', 'max:255'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'is_active' => ['boolean'],
             'sort_order' => ['integer'],
         ];

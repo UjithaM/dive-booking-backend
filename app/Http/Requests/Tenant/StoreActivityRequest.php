@@ -17,7 +17,7 @@ class StoreActivityRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'slug' => [
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 Rule::unique('activities')->where(function ($query) {
@@ -29,7 +29,7 @@ class StoreActivityRequest extends FormRequest
             'duration_hours' => ['nullable', 'numeric', 'min:0'],
             'max_participants' => ['nullable', 'integer', 'min:1'],
             'includes' => ['nullable', 'array'],
-            'hero_image_url' => ['nullable', 'string', 'url', 'max:255'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'is_active' => ['boolean'],
             'sort_order' => ['integer'],
         ];

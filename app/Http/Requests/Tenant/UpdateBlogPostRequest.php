@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Http\Requests\Tenant;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+
+class UpdateBlogPostRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['sometimes', 'required', 'string', 'max:255'],
+            'slug' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('blog_posts')->ignore($this->blog_post->id)->where(function ($query) {
+                    return $query->where('tenant_id', $this->user()->tenant_id);
+                }),
+            ],
+            'excerpt' => ['nullable', 'string'],
+            'body' => ['sometimes', 'required', 'string'],
+            'image' => ['nullable', 'image', 'max:5120'],
+            'status' => ['string', 'max:20', Rule::in(['draft', 'published', 'archived'])],
+            'published_at' => ['nullable', 'date'],
+        ];
+    }
+}

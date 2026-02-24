@@ -18,7 +18,7 @@ class UpdateCourseRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'slug' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 Rule::unique('courses')->ignore($this->course->id)->where(function ($query) {
@@ -32,7 +32,7 @@ class UpdateCourseRequest extends FormRequest
             'price' => ['nullable', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'size:3'],
             'includes' => ['nullable', 'array'],
-            'hero_image_url' => ['nullable', 'string', 'url', 'max:255'],
+            'image' => ['nullable', 'image', 'max:5120'],
             'is_active' => ['boolean'],
             'sort_order' => ['integer'],
         ];
