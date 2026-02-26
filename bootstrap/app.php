@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'tenant' => \App\Http\Middleware\IdentifyTenant::class,
+            'public_tenant' => \App\Http\Middleware\IdentifyPublicTenant::class,
         ]);
         $middleware->statefulApi();
     })
