@@ -1,0 +1,229 @@
+{
+    "info": {
+        "name": "Dive Booking System Backend API",
+        "description": "Integration documentation for the Dive Booking System API, focusing on the new Bookings and Payments endpoints.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Bookings",
+            "item": [
+                {
+                    "name": "List Bookings",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/tenant/bookings",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "tenant",
+                                "bookings"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Create Booking",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"customer\": {\n        \"email\": \"john.doe@example.com\",\n        \"first_name\": \"John\",\n        \"last_name\": \"Doe\",\n        \"phone\": \"+1234567890\",\n        \"date_of_birth\": \"1990-01-01\"\n    },\n    \"centre_id\": \"{{centre_id}}\",\n    \"booking_date\": \"2026-04-15\",\n    \"number_of_participants\": 2,\n    \"special_requests\": \"Vegetarian meals required if possible.\",\n    \"items\": [\n        {\n            \"bookable_type\": \"course\",\n            \"bookable_id\": \"{{course_id}}\",\n            \"quantity\": 2,\n            \"unit_price\": 150.00,\n            \"scheduled_date\": \"2026-04-16\"\n        }\n    ],\n    \"room_bookings\": [\n        {\n            \"room_id\": \"{{room_id}}\",\n            \"check_in\": \"2026-04-15\",\n            \"check_out\": \"2026-04-20\",\n            \"guests\": 2,\n            \"price_per_night\": 85.00\n        }\n    ]\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/tenant/bookings",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "tenant",
+                                "bookings"
+                            ]
+                        },
+                        "description": "Creates a new booking. If the customer email already exists in the system, it will link the booking to the existing customer. Otherwise, it creates a new customer profile automatically. Calculates the `total_amount` natively on the backend based on `unit_price`, `quantity`, and room `price_per_night`/duration. Currency is automatically defaulted to `USD`."
+                    }
+                },
+                {
+                    "name": "Get Booking Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/tenant/bookings/{{booking_id}}",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "tenant",
+                                "bookings",
+                                "{{booking_id}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Booking Status",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"confirmed\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/tenant/bookings/{{booking_id}}/status",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "tenant",
+                                "bookings",
+                                "{{booking_id}}",
+                                "status"
+                            ]
+                        },
+                        "description": "Used for changing booking states (pending, confirmed, completed, cancelled). If setting to `cancelled`, you must provide a `cancellation_reason` field in the JSON."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Payments",
+            "item": [
+                {
+                    "name": "List Payments for Booking",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/tenant/bookings/{{booking_id}}/payments",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "tenant",
+                                "bookings",
+                                "{{booking_id}}",
+                                "payments"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Record Payment",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"amount\": 150.00,\n    \"method\": \"credit_card\",\n    \"transaction_reference\": \"ch_1Mxxxx\",\n    \"gateway\": \"stripe\",\n    \"status\": \"completed\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/tenant/bookings/{{booking_id}}/payments",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "tenant",
+                                "bookings",
+                                "{{booking_id}}",
+                                "payments"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

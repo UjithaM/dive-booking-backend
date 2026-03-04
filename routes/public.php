@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Public\RoomController;
 use App\Http\Controllers\Api\Public\PromotionController;
 use App\Http\Controllers\Api\Public\BlogPostController;
 use App\Http\Controllers\Api\Public\FaqController;
+use App\Http\Controllers\Api\Public\CartController;
 
 Route::middleware(['public_tenant'])->prefix('public')->group(function () {
     Route::apiResource('activities', ActivityController::class)->only(['index', 'show']);
@@ -25,4 +26,11 @@ Route::middleware(['public_tenant'])->prefix('public')->group(function () {
     Route::apiResource('promotions', PromotionController::class)->only(['index', 'show']);
     Route::apiResource('blog-posts', BlogPostController::class)->only(['index', 'show']);
     Route::apiResource('faqs', FaqController::class)->only(['index', 'show']);
+
+    // Cart token system (no login required)
+    Route::get('cart', [CartController::class, 'getCart']);
+    Route::post('cart/items', [CartController::class, 'addItem']);
+    Route::patch('cart/items/{cartItem}', [CartController::class, 'updateItem']);
+    Route::delete('cart/items/{cartItem}', [CartController::class, 'removeItem']);
+    Route::post('cart/checkout', [CartController::class, 'checkout']);
 });

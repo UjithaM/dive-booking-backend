@@ -35,7 +35,20 @@ class CourseController extends Controller
 
         $course = Course::create($data);
 
-        $this->handleMediaUpload($request, $course);
+        if ($request->hasFile('main_image')) {
+            $course->addMediaFromRequest('main_image')->toMediaCollection('main_image', 'media');
+        }
+
+        if ($request->hasFile('things_image')) {
+            $files = $request->file('things_image');
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    $course->addMedia($file)->toMediaCollection('things_image', 'media');
+                }
+            } else {
+                $course->addMediaFromRequest('things_image')->toMediaCollection('things_image', 'media');
+            }
+        }
 
         return response()->json($course->load('media'), 201);
     }
@@ -63,7 +76,20 @@ class CourseController extends Controller
 
         $course->update($data);
 
-        $this->handleMediaUpload($request, $course);
+        if ($request->hasFile('main_image')) {
+            $course->addMediaFromRequest('main_image')->toMediaCollection('main_image', 'media');
+        }
+
+        if ($request->hasFile('things_image')) {
+            $files = $request->file('things_image');
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    $course->addMedia($file)->toMediaCollection('things_image', 'media');
+                }
+            } else {
+                $course->addMediaFromRequest('things_image')->toMediaCollection('things_image', 'media');
+            }
+        }
 
         return response()->json($course->load('media'));
     }

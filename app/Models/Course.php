@@ -22,10 +22,11 @@ class Course extends Model implements HasMedia
         'description',
         'duration_days',
         'min_age',
-        'price',
-        'currency',
         'includes',
         'hero_image_url',
+        'base_price',
+        'sale_price',
+        'is_per_person',
         'is_active',
         'sort_order',
     ];
@@ -33,12 +34,14 @@ class Course extends Model implements HasMedia
     protected $casts = [
         'includes' => 'array',
         'is_active' => 'boolean',
+        'is_per_person' => 'boolean',
+        'base_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
         'duration_days' => 'integer',
         'min_age' => 'integer',
-        'price' => 'decimal:2',
     ];
 
-    protected $appends = ['media_url'];
+    protected $appends = ['media_url', 'things_image_urls'];
 
     public function tenant()
     {
@@ -47,7 +50,8 @@ class Course extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('images')->singleFile();
+        $this->addMediaCollection('main_image')->singleFile();
+        $this->addMediaCollection('things_image');
     }
 
     public function registerMediaConversions(?Media $media = null): void
@@ -60,6 +64,13 @@ class Course extends Model implements HasMedia
 
     public function getMediaUrlAttribute(): ?string
     {
-        return $this->getFirstMediaUrl('images');
+        return $this->getFirstMediaUrl('main_image') ?: $this->getFirstMediaUrl('images');
+    }
+
+    public function getThingsImageUrlsAttribute(): array
+    {
+        return $this->getMedia('things_image')->map(function ($media) {
+            return $media->getUrl();
+        })->toArray();
     }
 }

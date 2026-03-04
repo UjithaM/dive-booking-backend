@@ -70,4 +70,9 @@ class Centre extends Model implements HasMedia
     {
         return $this->getFirstMediaUrl('images');
     }
+
+    public function bookings()
+    {
+        return $this->hasMany(Booking::class);
+    }
 }

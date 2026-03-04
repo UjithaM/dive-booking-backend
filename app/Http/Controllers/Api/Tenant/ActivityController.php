@@ -35,7 +35,20 @@ class ActivityController extends Controller
 
         $activity = Activity::create($data);
 
-        $this->handleMediaUpload($request, $activity);
+        if ($request->hasFile('main_image')) {
+            $activity->addMediaFromRequest('main_image')->toMediaCollection('main_image', 'media');
+        }
+
+        if ($request->hasFile('things_image')) {
+            $files = $request->file('things_image');
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    $activity->addMedia($file)->toMediaCollection('things_image', 'media');
+                }
+            } else {
+                $activity->addMediaFromRequest('things_image')->toMediaCollection('things_image', 'media');
+            }
+        }
 
         return response()->json($activity->load('media'), 201);
     }
@@ -63,7 +76,20 @@ class ActivityController extends Controller
 
         $activity->update($data);
 
-        $this->handleMediaUpload($request, $activity);
+        if ($request->hasFile('main_image')) {
+            $activity->addMediaFromRequest('main_image')->toMediaCollection('main_image', 'media');
+        }
+
+        if ($request->hasFile('things_image')) {
+            $files = $request->file('things_image');
+            if (is_array($files)) {
+                foreach ($files as $file) {
+                    $activity->addMedia($file)->toMediaCollection('things_image', 'media');
+                }
+            } else {
+                $activity->addMediaFromRequest('things_image')->toMediaCollection('things_image', 'media');
+            }
+        }
 
         return response()->json($activity->load('media'));
     }

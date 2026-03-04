@@ -11,6 +11,8 @@ Route::middleware(['auth:sanctum', 'tenant', 'role:tenant_admin'])->prefix('tena
         ]);
     });
 
+    Route::post('activities/{activity}', [\App\Http\Controllers\Api\Tenant\ActivityController::class, 'update']);
+    Route::post('courses/{course}', [\App\Http\Controllers\Api\Tenant\CourseController::class, 'update']);
     Route::apiResource('activities', \App\Http\Controllers\Api\Tenant\ActivityController::class);
     Route::apiResource('courses', \App\Http\Controllers\Api\Tenant\CourseController::class);
     Route::apiResource('dive-sites', \App\Http\Controllers\Api\Tenant\DiveSiteController::class);
@@ -24,4 +26,10 @@ Route::middleware(['auth:sanctum', 'tenant', 'role:tenant_admin'])->prefix('tena
     Route::apiResource('promotions', \App\Http\Controllers\Api\Tenant\PromotionController::class);
     Route::apiResource('blog-posts', \App\Http\Controllers\Api\Tenant\BlogPostController::class);
     Route::apiResource('faqs', \App\Http\Controllers\Api\Tenant\FaqController::class);
+
+    Route::apiResource('bookings', \App\Http\Controllers\Api\Tenant\BookingController::class)->except(['update']);
+    Route::patch('bookings/{booking}/status', [\App\Http\Controllers\Api\Tenant\BookingController::class, 'updateStatus']);
+
+    Route::get('bookings/{booking}/payments', [\App\Http\Controllers\Api\Tenant\PaymentController::class, 'index']);
+    Route::post('bookings/{booking}/payments', [\App\Http\Controllers\Api\Tenant\PaymentController::class, 'store']);
 });

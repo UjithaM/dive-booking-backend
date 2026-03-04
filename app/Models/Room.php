@@ -17,7 +17,9 @@ class Room extends Model
         'room_type_id',
         'room_number',
         'floor',
-        'base_price_per_night',
+        'base_price',
+        'sale_price',
+        'is_per_person',
         'status',
         'notes',
         'is_active',
@@ -25,7 +27,9 @@ class Room extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
-        'base_price_per_night' => 'decimal:2',
+        'is_per_person' => 'boolean',
+        'base_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
     ];
 
     public function tenant()
@@ -41,5 +45,10 @@ class Room extends Model
     public function roomType()
     {
         return $this->belongsTo(RoomType::class);
+    }
+
+    public function roomBookings()
+    {
+        return $this->hasMany(RoomBooking::class);
     }
 }
