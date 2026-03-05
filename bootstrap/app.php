@@ -27,6 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'public_tenant' => \App\Http\Middleware\IdentifyPublicTenant::class,
         ]);
         $middleware->statefulApi();
+        $middleware->validateCsrfTokens(except: [
+            'api/public/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $e, Request $request) {
