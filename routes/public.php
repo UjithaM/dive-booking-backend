@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\Public\RoomController;
 use App\Http\Controllers\Api\Public\PromotionController;
 use App\Http\Controllers\Api\Public\BlogPostController;
 use App\Http\Controllers\Api\Public\FaqController;
+use App\Http\Controllers\Api\Public\BookingController;
 use App\Http\Controllers\Api\Public\CartController;
 
 Route::middleware(['public_tenant'])->prefix('public')->group(function () {
@@ -26,6 +27,9 @@ Route::middleware(['public_tenant'])->prefix('public')->group(function () {
     Route::apiResource('promotions', PromotionController::class)->only(['index', 'show']);
     Route::apiResource('blog-posts', BlogPostController::class)->only(['index', 'show']);
     Route::apiResource('faqs', FaqController::class)->only(['index', 'show']);
+
+    // Direct customer booking (no login required)
+    Route::post('bookings', [BookingController::class, 'store']);
 
     // Cart token system (no login required)
     Route::get('cart', [CartController::class, 'getCart']);

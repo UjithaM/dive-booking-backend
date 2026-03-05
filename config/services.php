@@ -14,6 +14,13 @@ return [
     |
     */
 
+    'mailgun' => [
+        'api_key'   => env('MAILGUN_API_KEY'),
+        'domain'    => env('MAILGUN_DOMAIN'),
+        'from'      => env('MAILGUN_FROM', 'noreply@diveking.co'),
+        'from_name' => env('MAILGUN_FROM_NAME', 'Dive Booking'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],
