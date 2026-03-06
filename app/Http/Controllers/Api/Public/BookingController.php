@@ -94,6 +94,7 @@ class BookingController extends Controller
                 'centre_id'            => $data['centre_id'],
                 'status'               => 'pending',
                 'booking_date'         => $data['booking_date'],
+                'booking_time'         => $data['booking_time'] ?? null,
                 'total_amount'         => $totalAmount,
                 'discount_amount'      => 0,
                 'final_amount'         => $totalAmount,
@@ -125,6 +126,8 @@ class BookingController extends Controller
                 'message'           => 'Booking created successfully.',
                 'booking_reference' => $booking->booking_reference,
                 'booking_id'        => $booking->id,
+                'booking_date'      => $booking->booking_date->format('Y-m-d'),
+                'booking_time'      => $booking->booking_time,
                 'total_amount'      => $booking->total_amount,
                 'currency'          => $booking->currency,
                 'customer'          => [
@@ -153,7 +156,13 @@ class BookingController extends Controller
         $html = view('emails.booking-confirmation', compact('customer', 'booking', 'items'))->render();
 
         $itemLines = array_map(function (array $item) use ($booking) {
-            $date = $item['scheduled_date'] ? ' on ' . $item['scheduled_date'] : '';
+            $schedule = '';
+            if ($item['scheduled_date']) {
+                $schedule = ' on ' . $item['scheduled_date'];
+                if ($item['scheduled_time']) {
+                    $schedule .= ' at ' . $item['scheduled_time'];
+                }
+            }
             return sprintf(
                 '  - %s x%d @ %s %.2f each = %s %.2f%s',
                 $item['bookable_name'],
@@ -162,9 +171,11 @@ class BookingController extends Controller
                 $item['unit_price'],
                 $booking->currency,
                 $item['total_price'],
-                $date
+                $schedule
             );
         }, $items);
+
+        $bookingDateTime = $booking->booking_date->format('Y-m-d') . ($booking->booking_time ? ' at ' . $booking->booking_time : '');
 
         $text = implode("\n", array_filter([
             "Hi {$customer->first_name} {$customer->last_name},",
@@ -172,7 +183,7 @@ class BookingController extends Controller
             'Your booking has been confirmed!',
             '',
             "Booking Reference: {$booking->booking_reference}",
-            "Booking Date:      {$booking->booking_date}",
+            "Booking Date/Time: {$bookingDateTime}",
             "Currency:          {$booking->currency}",
             '',
             'Items:',

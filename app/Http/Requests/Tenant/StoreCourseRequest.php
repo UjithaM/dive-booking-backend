@@ -18,7 +18,7 @@ class StoreCourseRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'short_description' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'duration_days' => ['nullable', 'integer', 'min:1'],
+            'duration_hours' => ['nullable', 'numeric', 'min:0'],
             'min_age' => ['nullable', 'integer', 'min:0'],
             'includes' => ['nullable', 'array'],
             'main_image' => ['nullable', 'image', 'max:5120'],

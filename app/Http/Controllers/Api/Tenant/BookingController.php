@@ -68,6 +68,7 @@ class BookingController extends Controller
             'promotion_id' => $data['promotion_id'] ?? null,
             'status' => 'pending',
             'booking_date' => $data['booking_date'],
+            'booking_time' => $data['booking_time'] ?? null,
             'total_amount' => $totalAmount,
             'discount_amount' => 0,
             'final_amount' => $totalAmount,

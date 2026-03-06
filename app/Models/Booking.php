@@ -19,6 +19,7 @@ class Booking extends Model
         'promotion_id',
         'status',
         'booking_date',
+        'booking_time',
         'total_amount',
         'discount_amount',
         'final_amount',
@@ -32,6 +33,7 @@ class Booking extends Model
 
     protected $casts = [
         'booking_date' => 'date',
+        'booking_time' => 'string',
         'cancelled_at' => 'datetime',
         'total_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',

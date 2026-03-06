@@ -25,6 +25,7 @@ class CreateBookingRequest extends FormRequest
 
             'centre_id'       => ['required', 'uuid', 'exists:centres,id'],
             'booking_date'    => ['required', 'date'],
+            'booking_time'    => ['nullable', 'date_format:H:i'],
             'currency'        => ['nullable', 'string', 'size:3'],
             'special_requests' => ['nullable', 'string'],
 

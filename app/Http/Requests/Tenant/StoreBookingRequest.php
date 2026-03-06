@@ -24,6 +24,7 @@ class StoreBookingRequest extends FormRequest
             'centre_id' => 'required|uuid|exists:centres,id',
             'promotion_id' => 'nullable|uuid|exists:promotions,id',
             'booking_date' => 'required|date',
+            'booking_time' => 'nullable|date_format:H:i',
             'number_of_participants' => 'nullable|integer|min:1',
             'special_requests' => 'nullable|string',
             'internal_notes' => 'nullable|string',

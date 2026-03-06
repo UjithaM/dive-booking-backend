@@ -20,7 +20,7 @@ class Course extends Model implements HasMedia
         'slug',
         'short_description',
         'description',
-        'duration_days',
+        'duration_hours',
         'min_age',
         'includes',
         'hero_image_url',
@@ -37,7 +37,7 @@ class Course extends Model implements HasMedia
         'is_per_person' => 'boolean',
         'base_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
-        'duration_days' => 'integer',
+        'duration_hours' => 'decimal:2',
         'min_age' => 'integer',
     ];
 
