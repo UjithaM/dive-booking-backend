@@ -21,6 +21,10 @@ return [
         'from_name' => env('MAILGUN_FROM_NAME', 'Dive Booking'),
     ],
 
+    'super_admin' => [
+        'email' => env('SUPER_ADMIN_EMAIL'),
+    ],
+
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
     ],

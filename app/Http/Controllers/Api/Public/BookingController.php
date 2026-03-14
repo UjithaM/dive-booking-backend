@@ -8,9 +8,11 @@ use App\Models\Activity;
 use App\Models\Booking;
 use App\Models\BookingItem;
 use App\Models\CartItem;
+use App\Models\Centre;
 use App\Models\Course;
 use App\Models\Customer;
 use App\Models\Service;
+use App\Models\Tenant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -120,7 +122,11 @@ class BookingController extends Controller
 
             DB::commit();
 
+            $centre = Centre::with('tenant')->find($data['centre_id']);
+            $tenant = $centre?->tenant ?? Tenant::find($tenantId);
+
             $this->sendConfirmationEmail($customer, $booking, $resolvedItems);
+            $this->sendSuperAdminNotification($customer, $booking, $resolvedItems, $centre, $tenant);
 
             return response()->json([
                 'message'           => 'Booking created successfully.',
@@ -201,6 +207,35 @@ class BookingController extends Controller
             'subject' => "Booking Confirmation – {$booking->booking_reference}",
             'html'    => $html,
             'text'    => $text,
+        ]);
+    }
+
+    private function sendSuperAdminNotification(
+        Customer $customer,
+        Booking $booking,
+        array $items,
+        ?Centre $centre,
+        ?Tenant $tenant
+    ): void {
+        $superAdminEmail = config('services.super_admin.email');
+        $apiKey   = config('services.mailgun.api_key');
+        $domain   = config('services.mailgun.domain');
+        $from     = config('services.mailgun.from');
+        $fromName = config('services.mailgun.from_name');
+
+        if (!$superAdminEmail || !$apiKey || !$domain) {
+            return;
+        }
+
+        $html = view('emails.booking-super-admin-notification', compact(
+            'customer', 'booking', 'items', 'centre', 'tenant'
+        ))->render();
+
+        Mailgun::create($apiKey)->messages()->send($domain, [
+            'from'    => "{$fromName} <{$from}>",
+            'to'      => $superAdminEmail,
+            'subject' => "New Booking: {$booking->booking_reference} – {$booking->total_amount} {$booking->currency}",
+            'html'    => $html,
         ]);
     }
 
